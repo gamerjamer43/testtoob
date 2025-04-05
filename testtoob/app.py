@@ -301,8 +301,7 @@ def upload():
         video_file = form.video_file.data
         tags = [tag.strip() for tag in bleach.clean(form.tags.data).split(',')] if form.tags.data else []
         tags = ','.join(tags) if len(tags) <= 5 and len(tags) != 0 else ""
-        
-        # Save the original video file
+
         video_filename = secure_filename(datetime.datetime.now().strftime("%Y%m%d_%H%M%S") + "_" + str(current_user.id) + "_" + video_file.filename)
         temp_video_path = os.path.join(app.config['UPLOAD_FOLDER'], video_filename)
         video_file.save(temp_video_path)
@@ -310,20 +309,17 @@ def upload():
         mime = MimeTypes()
         mime_type, _ = mime.guess_type(temp_video_path)
         if mime_type and mime_type.startswith('video'):
-            # Create a distinct output filename and path for the converted file
             base_filename = os.path.splitext(video_file.filename)[0]
             output_filename = base_filename + '_converted.mp4'
             output_filename = secure_filename(datetime.datetime.now().strftime("%Y%m%d_%H%M%S") + "_" + str(current_user.id) + "_" + output_filename)
             output_path = os.path.join(app.config['UPLOAD_FOLDER'], output_filename)
-            
-            # Run ffmpeg conversion with separate input and output paths
+
             subprocess.run(
                 ['ffmpeg', '-i', temp_video_path, '-c:v', 'libx264', '-crf', '18', '-preset', 'medium',
                  '-loglevel', 'quiet', '-c:a', 'aac', '-b:a', '192k', '-y', output_path],
                 check=True
             )
-            
-            # Remove the original file and update paths
+
             os.remove(temp_video_path)
             video_filename = output_filename
             temp_video_path = output_path
@@ -333,8 +329,6 @@ def upload():
 
         try:
             cvopen = cv2.VideoCapture(temp_video_path)
-            # Note: CAP_PROP_POS_MSEC may not be the best property for duration.
-            # You might consider CAP_PROP_FRAME_COUNT and CAP_PROP_FPS for a more accurate duration.
             video_duration = cvopen.get(cv2.CAP_PROP_POS_MSEC)
             
             if video_duration > 3600:
@@ -347,7 +341,6 @@ def upload():
             flash('There was an issue with the video file. Please try again.', 'danger')
             return redirect(url_for('upload'))
 
-        # Process thumbnail
         thumbnail_file = form.thumbnail.data
         thumbnail_filename = secure_filename(datetime.datetime.now().strftime("%Y%m%d_%H%M%S") + "_" + str(current_user.id) + "_" + thumbnail_file.filename)
         thumbnail_path = os.path.join(app.config['UPLOAD_FOLDER'], thumbnail_filename)
