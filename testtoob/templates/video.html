@@ -1,0 +1,222 @@
+<!-- templates/video.html -->
+{% extends "base.html" %}
+{% block title %}{{ video.title }} - TestToob{% endblock %}
+{% block content %}
+{% block head %}
+    {{ super() }}
+    <meta property="og:title" content="{{ video.title }}" />
+    <meta property="og:site_name" content="TestToob">
+    <meta property="og:description" content="{{ video.description }}" />
+    <meta property="og:url" content="{{ url_for('video', video_id=video.id, _external=True)}}" />
+    <meta property="og:video" content="{{ url_for('uploaded_file', filename=video.video_file, _external=True) }}" />
+    <meta property="og:video:secure_url" content="{{ url_for('uploaded_file', filename=video.video_file, _external=True) }}" />
+    <meta property="og:video:width" content="1280" />
+    <meta property="og:video:height" content="720" />
+    <meta property="og:type" content="video" />
+    <meta property="og:video:type" content="video/{{ video.video_file.split('.')[-1].lower() }}" />
+    <meta property="og:author" content="Author Name" />
+    <meta name="theme-color" content="#351441">
+{% endblock %}
+
+<div class="row">
+    <div class="col-lg-12 col-xl-8">
+        <div class="embed-responsive embed-responsive-16by9">
+            <video class="embed-responsive-item" controls>
+                <source src="{{ url_for('uploaded_file', filename=video.video_file) }}" type="video/{{ 'quicktime' if video.video_file.split('.')[-1].lower() == 'mov' else video.video_file.split('.')[-1].lower() }}" loading="lazy">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+
+        <div class="rounded-box" style="background-color: #092847; padding: 1.5em; border-radius: 10px; margin-top: 1em;">
+            <div class="d-flex align-items-center">
+                <img src="{{ url_for('uploaded_file', filename=video.author.profile_picture) }}" 
+                     alt="{{ video.author.username }}'s Profile Picture" 
+                     class="img-fluid rounded-circle me-3" 
+                     style="width: 60px; height: 60px; margin-right: 1em;"
+                     loading="lazy">
+                <h5 class="mb-0">
+                    <a href="{{ url_for('channel', user_id=video.author.id) }}">{{ video.author.username }}</a>
+                    {% if video.author.verified %}
+                        <span class="verified-icon" title="Verified User">
+                            <i class="fas fa-check-circle" style="color: #00FF00; font-size: 1.2em;"></i>
+                        </span>
+                    {% endif %}
+                </h5>
+            </div>
+
+            <h2 class="mt-3" style="font-weight: 750;">{{ video.title }}</h2>
+            <p style="font-weight: 500;">{{ video.description }}</p>
+            <p data-time="{{ video.date_posted.isoformat() }}Z"></p><span style="font-weight: 500;">{{ video.views }} views</span>
+            <br>
+
+            <div class="d-flex justify-content-between flex-wrap">
+                <div class="mb-2">
+                    {% if current_user.is_authenticated %}
+                        <button id="like-button" class="btn {{ 'btn-success' if user_like else 'btn-outline-light' }}" data-video-id="{{ video.id }}" data-liked="{{ 'true' if user_like else 'false' }}">
+                            <i class="fas fa-thumbs-up"></i> {{ 'Unlike' if user_like else 'Like' }} (<span id="like-count">{{ video.like_counter() }}</span>)
+                        </button>
+                        <button id="dislike-button" class="btn {{ 'btn-danger' if user_dislike else 'btn-outline-light' }}" data-video-id="{{ video.id }}" data-disliked="{{ 'true' if user_dislike else 'false' }}">
+                            <i class="fas fa-thumbs-down"></i> {{ 'Undislike' if user_dislike else 'Dislike' }} (<span id="dislike-count">{{ video.dislike_counter() }}</span>)
+                        </button>
+                    {% else %}
+                        <a href="{{ url_for('login') }}" class="btn btn-outline-light" data-toggle="modal" data-target="#actionModal">
+                            <i class="fas fa-thumbs-up"></i> Like
+                        </a>
+                        <a href="{{ url_for('login') }}" class="btn btn-outline-light" data-toggle="modal" data-target="#actionModal">
+                            <i class="fas fa-thumbs-down"></i> Dislike
+                        </a>
+                    {% endif %}
+                </div>
+                
+                <div class="mb-2">
+                    {% if current_user.is_authenticated %}
+                        <button id="subscribe-button" class="btn {{ 'btn-success' if user_sub else 'btn-outline-light' }}" data-channel-id="{{ video.author.id }}" 
+                            data-subscribed="{{ 'true' if current_user.is_authenticated and current_user.is_subscribed(video.author) else 'false' }}">
+                            {% if current_user.is_authenticated %}
+                                <i class="fas fa-user-plus" id="subscription-icon"></i>
+                                {{ 'Unsubscribe' if current_user.is_subscribed(video.author) else 'Subscribe' }}
+                                (<span id="subscription-count">{{ video.author.subscription_count() }}</span>)
+                            {% else %}
+                                Subscribe
+                            {% endif %}
+                        </button>
+                    {% else %}
+                        <a href="{{ url_for('login') }}" class="btn btn-outline-light" data-toggle="modal" data-target="#actionModal">
+                            <i class="fas fa-user-plus" id="subscription-icon"></i> Subscribe
+                        </a>
+                    {% endif %}
+                    {% if current_user.is_authenticated and current_user.is_subscribed(video.author) %}
+                    <button id="notification-bell" class="btn {{ 'btn-primary' if user_notifs else 'btn-outline-light' }}">
+                        <i class="fas fa-bell" id="notification-icon"></i> Notifs
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if video.tags %}
+            <div class="tags-section mt-3">
+                <h5>Tags:</h5>
+                <div class="d-flex flex-wrap">
+                    {% for tag in video.tags.split(',') %}
+                    <span class="tag-pill">{{ tag.strip("") }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <hr>
+        {% if current_user.is_authenticated %}
+        <form id="comment-form" method="POST" action="">
+            <input type="hidden" name="video-id" value="{{ video.id }}">
+            <textarea class="form-control mb-2" name="comment" rows="3" placeholder="Add a comment" style="background-color: #1a1a1a; border-color: gray;"></textarea>
+            <button type="submit" class="btn btn-primary">Comment</button>
+        </form>
+        {% else %}
+        <p class="text-light">Please <a href="{{ url_for('login') }}">login</a> to comment.</p>
+        {% endif %}
+
+        <hr>
+        <div id="comments-section">
+            {% for comment in comments %}
+            <div class="comment mb-2">
+                <br>
+                {% if comment.author %}
+                    <h5><strong><a href="{{ url_for('channel', user_id=comment.author.id) }}">{{ comment.author.username }}</a>:</strong> {{ comment.content | safe }}</h5>
+                {% else %}
+                    <h5><strong>Banned user:</strong> {{ comment.content | safe }}</h5>
+                {% endif %}
+                <div>
+                    <form action="{{ url_for('like_comment', comment_id=comment.id) }}" method="POST" class="d-inline">
+                        <button class="fas fa-thumbs-up"></button> ({{ comment.like_count() }}) Like
+                    </form>
+                    <form action="{{ url_for('dislike_comment', comment_id=comment.id) }}" method="POST" class="d-inline">
+                        <button class="fas fa-thumbs-down"></button> ({{ comment.dislike_count() }}) Dislike
+                    </form>
+                    {% if comment.user_id == current_user.id %}
+                    <form id="delete-comment-form-{{ comment.id }}" method="POST" action="{{ url_for('delete_comment', comment_id=comment.id) }}" class="d-inline" onsubmit="event.preventDefault(); deleteComment('{{ comment.id }}');">
+                        <button type="submit" class="btn btn-danger" style="cursor: pointer;">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+                <br>
+                {% for reply in comment.replies %}
+                <div class="reply ml-4 mb-2">
+                    {% if reply.author %}
+                        <p><strong><a href="{{ url_for('channel', user_id=reply.author.id) }}">{{ reply.author.username }}</a>:</strong> {{ reply.content | safe }}</p>
+                    {% else %}
+                        <p><strong>Banned user:</strong> {{ comment.reply.content | safe }}</p>
+                    {% endif %}
+                    {% if reply.user_id == current_user.id %}
+                    <form id="delete-reply-form-{{ reply.id }}" method="POST" action="{{ url_for('delete_reply', reply_id=reply.id) }}" class="d-inline" onsubmit="event.preventDefault(); deleteReply('{{ reply.id }}');">
+                        <button type="submit" class="btn btn-danger ml-2" style="cursor: pointer;">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+                {% endfor %}
+                <form method="POST" action="{{ url_for('reply_to_comment', comment_id=comment.id) }}">
+                    <br>
+                    <textarea class="form-control mb-2" name="reply" rows="2" placeholder="Reply to this comment" style="background-color: #1a1a1a; border-color: gray; resize: none;"></textarea>
+                    <button type="submit" class="btn btn-secondary">Reply</button>
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="col-lg-8 col-xl-4">
+        <h5>Recommended Videos</h5>
+        <ul class="list-group">
+            {% for recommended_video in recommended_videos %}
+            <li class="list-group-item bg-dark text-light" style="margin-bottom: .5em;">
+                <a href="{{ url_for('video', video_id=recommended_video.id) }}" class="text-light">
+                    <div class="d-flex flex-column flex-xl-row align-items-center">
+                        <img src="{{ url_for('uploaded_file', filename=recommended_video.thumbnail)}}" 
+                             alt="{{ recommended_video.title }} Thumbnail" 
+                             class="img-fluid" 
+                             style="width: 100%; height: auto; max-width: 128px; max-height: 72px; margin-right: 1em; object-fit: fill;"
+                             loading="lazy"/>
+                        <div>
+                            <strong class="username">{{ recommended_video.title }}</strong>
+                            <div class="verified-container" style="display: flex; align-items: center;">
+                                <small>{{ recommended_video.author.username }}</small>
+                                <span class="verified-icon" title="Verified User">
+                                    <i class="fas fa-check-circle" style="color: #00FF00; margin-left: 0.2em;"></i>
+                                </span>
+                            </div>
+                            <small>{{ recommended_video.views }} views</small><br>
+                            <small data-time="{{ video.date_posted.isoformat() }}Z"></small>
+                        </div>
+                    </div>
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+<div class="modal fade" id="actionModal" tabindex="-1" role="dialog" aria-labelledby="actionModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="background-color: #2a2a2a;">
+            <div class="modal-header">
+                <h5 class="modal-title" id="actionModalLabel">Action Required</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" style="background-color: #2a2a2a;">
+                <p>Please log in or sign up to perform this action.</p>
+                <a href="{{ url_for('login') }}" class="btn btn-primary">Log In</a>
+                <a href="{{ url_for('register') }}" class="btn btn-primary">Sign Up</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/video.js') }}"></script>
+<script src="{{ url_for('static', filename='js/time.js') }}"></script>
+{% endblock %}

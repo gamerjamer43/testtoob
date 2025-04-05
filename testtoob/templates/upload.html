@@ -1,0 +1,44 @@
+<!-- templates/upload.html -->
+{% extends "base.html" %}
+{% block title %}Upload Video - TestToob{% endblock %}
+{% block content %}
+<head>
+    <meta property="og:title" content="{% block og_title %}TestToob{% endblock %}" />
+    <meta property="og:description" content="{% block og_description %}Welcome to TestToob! This is a clone of YouTube made by @microwavedpopcorn on discord, and so far it's a WIP. Upload your videos here and see what the fuck happens, idk!{% endblock %}" />
+    <meta property="og:image" content="{{ url_for('uploaded_file', filename='logo.png') }}" />
+    <meta property="og:url" content="{% block og_url %}{{ url_for('home') }}{% endblock %}" />
+    <meta property="og:type" content="website" />
+</head>
+
+<h2 class="text-light">Upload Video</h2>
+<form method="POST" enctype="multipart/form-data" id="video_upload_form">
+    {{ form.hidden_tag() }}
+    <div class="form-group">
+        {{ form.title.label(class="text-light") }}
+        {{ form.title(class="form-control") }}
+    </div>
+    <div class="form-group">
+        {{ form.description.label(class="text-light") }}
+        {{ form.description(class="form-control") }}
+    </div>
+    <div class="form-group">
+        {{ form.thumbnail.label(class="text-light") }}
+        <input type="file" id="thumbnail" name="thumbnail" accept=".png,.jpg,.jpeg" class="d-none" onchange="updateThumbnailLabel(this); validateThumbnail(this);" required>
+        <label for="thumbnail" class="btn btn-secondary">Upload Thumbnail</label>
+    </div>
+    <div class="form-group">
+        {{ form.video_file.label(class="text-light") }}
+        <input type="file" id="video_file" name="video_file" accept=".mp4" class="d-none" onchange="updateVideoLabel(this); validateVideo(this);" required>
+        <label for="video_file" class="btn btn-secondary">Upload Video</label>
+    </div>
+    <div class="form-group">
+        {{ form.tags.label(class="text-light") }}
+        {{ form.tags(class="form-control") }}
+        <small class="form-text text-muted" id="tagError" style="color:red; display:none;"></small>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Upload</button>
+</form>
+
+<script src="{{ url_for('static', filename='js/upload.js') }}"></script>
+{% endblock %}

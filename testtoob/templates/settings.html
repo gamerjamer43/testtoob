@@ -1,0 +1,48 @@
+<!-- templates/settings.html -->
+{% extends "base.html" %}
+{% block title %}Settings{% endblock %}
+
+{% block content %}
+<head>
+    <meta property="og:title" content="{% block og_title %}TestToob{% endblock %}" />
+    <meta property="og:description" content="{% block og_description %}Welcome to TestToob! This is a clone of YouTube made by @microwavedpopcorn on discord, and so far it's a WIP. Upload your videos here and see what the fuck happens, idk!{% endblock %}" />
+    <meta property="og:image" content="{{ url_for('uploaded_file', filename='logo.png') }}" />
+    <meta property="og:url" content="{% block og_url %}{{ url_for('home') }}{% endblock %}" />
+    <meta property="og:type" content="website" />
+</head>
+
+<h1 class="text-light" style="margin-bottom: 1em; margin-top: 1em;">Settings</h1>
+
+<form method="POST" enctype="multipart/form-data">
+    {{ form.hidden_tag() }}
+    
+    <div class="form-group">
+        <label for="profile_picture" class="text-light">Profile Picture</label>
+        <input type="file" name="profile_picture" class="d-none" id="profile_picture" onchange="updateProfilePictureLabel(this)">
+        <label for="profile_picture" class="btn btn-secondary">Upload Profile Picture</label>
+    </div>
+    
+    <div class="form-group">
+        <label for="channel_banner" class="text-light">Channel Banner</label>
+        <input type="file" name="channel_banner" class="d-none" id="channel_banner" onchange="updateChannelBannerLabel(this)">
+        <label for="channel_banner" class="btn btn-secondary">Upload Channel Banner</label>
+    </div>
+
+    <br>
+    <div class="form-group">
+        <label for="bio" class="text-light">Bio</label>
+        {{ form.bio(class="form-control", id="bio") }}
+    </div>
+    <br>
+    
+    <div class="form-group">
+        <label for="featured_video" class="text-light">Featured Video</label>
+        {{ form.featured_video(class="form-control", id="featured_video") }}
+    </div>
+    <br>
+
+    <button type="submit" class="btn btn-primary py-2 px-3">{{ form.submit.label }}</button>
+</form>
+
+<script src="{{ url_for('static', filename='js/settings.js') }}"></script>
+{% endblock %}

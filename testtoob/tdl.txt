@@ -1,0 +1,40 @@
+to do list:
+- * DONE hard cap on uploads length and size
+- * DONE edit title/description
+- * DONE allow users to delete their own videos
+- * DONE convert videos to local time
+- * DONE verification badges
+- * DONE video tags
+- * DONE unlisted/private
+- * DONE channel sort
+- * DONE channel search
+- * DONE DISLIKES FUCKING DISLIKES
+- * DONE delete comments
+- * DONE notifications tab (fucking kill me bro)
+- * DONE (kinda added with notif tab) new icon next to unseen videos
+- * DONE modal on subscribe button if not logged in
+- * DONE (another long one fuck) featured video on channel
+- * DONE make movs work (was not on the list i did it anyways now no viruses for me)
+- * DONE video analytics page (videos, likes, subs from video, other shit)
+- * PARTIAL timestamps and @s in comments
+
+- add ability to see users subs
+- watch history page and liked videos page
+- subscribed channels sidebar
+- subscribed channels page
+- volume saving
+- playlists
+- filtering (spam, naughty shit)
+- external profile links
+- content/comment reports
+- better reccomendations (based on the below)
+- watchtime tracking and other analytics
+- OPTIONAL 2sv (must verify email)
+
+maybe:
+- audio sharing
+
+db related DO NOW:
+- volume saving
+- playlists
+- watchtime tracking and other analytics

@@ -1,0 +1,12 @@
+<!-- templates/errors/413.html -->
+{% extends "base.html" %}
+
+{% block title %}404 - Page Not Found{% endblock %}
+
+{% block content %}
+<div class="text-center">
+    <h1 class="display-3" style="font-weight: 700;">413</h1>
+    <p class="lead" style="font-weight: 700;">Compress that hoe! Why is your file larger than 250MB it has no reason to be so.</p>
+    <a class="btn btn-primary mt-3" style="font-weight: 700;" href="{{ url_for('home') }}">Go back to Home</a>
+</div>
+{% endblock %}

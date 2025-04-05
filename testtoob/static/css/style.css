@@ -1,0 +1,276 @@
+/* static/css/style.css */
+
+body {
+    background-color: #181818;
+    color: #ffffff;
+}
+
+::-webkit-scrollbar {
+    width: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background: #2a2a2a;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #4a4a4a;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: #606060;
+}
+
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #4a4a4a #2a2a2a;
+}
+
+
+
+
+.navbar-brand {
+    color: #1e90ff !important;
+}
+
+.navbar-dark .navbar-nav .nav-link {
+    color: #ffffff !important;
+}
+
+.comment button {
+    background-color: #1e90ff;
+    border: none;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+.comment button:hover {
+    background-color: #1a73e8;
+}
+.comment button:focus {
+    outline: none;
+}
+
+.container {
+    color: #ffffff;
+}
+
+.card {
+    max-width: 320px;
+    background-color: #242424;
+    border: none;
+}
+
+.card img {
+    width: 100%;
+    height: auto;
+}
+
+.card-title, .card-text {
+    color: #ffffff;
+}
+
+.channel-header img {
+    object-fit: cover;
+}
+
+.channel-content img {
+    object-fit: cover;
+    width: 100%;
+    height: auto;
+}
+
+.btn-primary {
+    background-color: #1e90ff;
+    border-color: #1e90ff;
+}
+
+.btn-outline-light {
+    border-color: #ffffff;
+    color: #ffffff;
+}
+
+.btn-outline-primary {
+    color: #1e90ff;
+    border-color: #1e90ff;
+}
+
+.tag-pill {
+    background-color: #1e90ff;
+    color: #ffffff;
+    padding: 0.5em 1em;
+    border-radius: 20px;
+    margin: 0.2em;
+    font-size: 0.9em;
+    font-family: 'Your Font Here', sans-serif;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-transform: capitalize;
+}
+
+.input-group {
+    margin-bottom: 20px;
+}
+
+.input-group .form-control {
+    border-radius: 0;
+}
+
+.input-group .input-group-append .btn {
+    background-color: #1e90ff;
+    border-color: #1e90ff;
+    color: white;
+}
+
+video {
+    max-width: 100%;
+    max-height: 500px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    background-color: black;
+    position: relative;
+}
+
+.rounded-box {
+    position: relative;
+    z-index: 1;
+}
+
+.embed-responsive {
+    margin-bottom: 1em;
+}
+
+#like-button, #subscribe-button, #dislike-button, #notification-bell {
+    pointer-events: auto;
+    z-index: 10;
+}
+
+#notification-count {
+    position: relative;
+    border-radius: 50%;
+    font-size: 0.8em;
+    color: white; /* Text color */
+    background-color: red; /* Background color */
+    display: inline;
+    padding: 0.15em 0.5em;
+}
+
+/* General comment section styles */
+.comment {
+    background-color: #2a2a2a;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease;
+}
+
+.comment:hover {
+    transform: translateY(-2px);
+}
+
+.comment h5 {
+    font-size: 16px;
+    margin-bottom: 10px;
+    color: #f0f0f0;
+}
+
+.comment a {
+    text-decoration: none;
+    color: #3498db;
+    transition: color 0.3s ease;
+}
+
+.comment a:hover {
+    color: #2980b9;
+}
+
+.comment button {
+    background-color: transparent;
+    border: none;
+    color: #ccc;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 5px;
+    transition: color 0.3s ease, background-color 0.3s ease;
+}
+
+.comment button:hover {
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.comment form {
+    display: inline;
+    margin-right: 10px;
+}
+
+.comment .btn-danger {
+    background-color: #e74c3c;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 5px;
+    color: white;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.comment .btn-danger:hover {
+    background-color: #c0392b;
+}
+
+.comment textarea {
+    border-radius: 5px;
+    padding: 10px;
+    background-color: #1f1f1f;
+    color: white;
+    border: 1px solid #3a3a3a;
+}
+
+.comment textarea:focus {
+    border-color: #3498db;
+    outline: none;
+}
+
+.reply {
+    background-color: #1f1f1f;
+    padding: 10px;
+    border-radius: 5px;
+    margin-left: 20px;
+    color: #ccc;
+    display: flex;
+}
+
+.reply p {
+    margin-bottom: 5px;
+}
+
+.reply a {
+    color: #3498db;
+}
+
+.reply a:hover {
+    color: #2980b9;
+}
+
+/* Like/Dislike buttons */
+.comment .fas {
+    font-size: 16px;
+    margin-right: 5px;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .comment, .reply {
+        padding: 10px;
+    }
+    
+    .comment h5 {
+        font-size: 14px;
+    }
+}

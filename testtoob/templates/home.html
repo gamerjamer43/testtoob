@@ -1,0 +1,80 @@
+<!-- templates/home.html -->
+{% extends "base.html" %}
+{% block title %}Home - TestToob{% endblock %}
+{% block content %}
+<head>
+    <meta property="og:title" content="{% block og_title %}TestToob{% endblock %}" />
+    <meta property="og:description" content="{% block og_description %}Welcome to TestToob! This is a clone of YouTube made by @microwavedpopcorn on discord, and so far it's a WIP. Upload your videos here and see what the fuck happens, idk!{% endblock %}" />
+    <meta property="og:image" content="{{ url_for('uploaded_file', filename='logo.png') }}" />
+    <meta property="og:url" content="{% block og_url %}{{ url_for('home') }}{% endblock %}" />
+    <meta property="og:type" content="website" />
+</head>
+
+<h1 class="text-light d-flex justify-content-between align-items-center" style="margin-bottom: 1em">
+    Recommended Videos
+</h1>
+
+<div class="d-block d-md-none mb-2">
+    <div class="btn-group" role="group" aria-label="Video Type">
+        <a href="{{ url_for('home', view='trending', page=1) }}" class="btn btn-secondary btn-lg btn-sm btn-mobile {% if view_type == 'trending' %}active{% endif %}">Trending</a>
+        <a href="{{ url_for('home', view='new', page=1) }}" class="btn btn-secondary btn-lg btn-sm btn-mobile {% if view_type == 'new' %}active{% endif %}">New</a>
+        <a href="{{ url_for('home', view='random', page=1) }}" class="btn btn-secondary btn-lg btn-sm btn-mobile {% if view_type == 'random' %}active{% endif %}">Random</a>
+
+        {% if current_user.is_authenticated %}
+        <a href="{{ url_for('home', view='subscribed', page=1) }}" class="btn btn-secondary btn-lg btn-sm btn-mobile {% if view_type == 'subscribed' %}active{% endif %}">Subscribed</a>
+        {% endif %}
+    </div>
+</div>
+<div class="d-none d-md-block">
+    <div class="btn-group" role="group" aria-label="Video Type">
+        <a href="{{ url_for('home', view='trending', page=1) }}" class="btn btn-secondary {% if view_type == 'trending' %}active{% endif %}">Trending</a>
+        <a href="{{ url_for('home', view='new', page=1) }}" class="btn btn-secondary {% if view_type == 'new' %}active{% endif %}">New</a>
+        <a href="{{ url_for('home', view='random', page=1) }}" class="btn btn-secondary {% if view_type == 'random' %}active{% endif %}">Random</a>
+
+        {% if current_user.is_authenticated %}
+        <a href="{{ url_for('home', view='subscribed', page=1) }}" class="btn btn-secondary {% if view_type == 'subscribed' %}active{% endif %}">Subscribed</a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row mt-4">
+    {% for video in videos %}
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 mb-4">
+        <div class="card bg-dark text-light">
+            <a href="{{ url_for('video', video_id=video.id) }}">
+                <img src="{{ url_for('uploaded_file', filename=video.thumbnail) }}" 
+                     class="card-img-top" 
+                     alt="Thumbnail" 
+                     style="height: 180px; object-fit: fill;">
+            </a>
+            <div class="card-body">
+                <h6 class="card-subtitle mb-2 text-muted">
+                    <a href="{{ url_for('channel', user_id=video.author.id) }}" class="text-light">{{ video.author.username }}</a>
+                    <span class="verified-icon" title="Verified User">
+                        <i class="fas fa-check-circle" style="color: #00FF00; margin-left: 0.1em;"></i>
+                    </span>
+                </h6>
+                <a href="{{ url_for('video', video_id=video.id) }}" class="h5">{{ video.title }}</a>
+                <p class="card-text">Views: {{ video.views }}</p>
+                <p class="card-text" data-time="{{ video.date_posted.isoformat() + 'Z' }}"></p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="pagination">
+    {% if videos.has_prev %}
+        <a href="{{ url_for('home', view=view_type, page=videos.prev_num) }}">&laquo; Previous</a>
+    {% endif %}
+
+    <span style="margin-left: 1em; margin-right: 1em;">Page {{ videos.page }} of {{ videos.pages }}</span>
+
+    {% if videos.has_next %}
+        <a href="{{ url_for('home', view=view_type, page=videos.next_num) }}">Next &raquo;</a>
+    {% endif %}
+</div>
+
+<script src="{{ url_for('static', filename='js/time.js') }}"></script>
+
+{% endblock %}

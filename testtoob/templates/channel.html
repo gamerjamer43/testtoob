@@ -1,0 +1,182 @@
+<!-- templates/channel.html -->
+{% extends "base.html" %}
+{% block title %}{{ user.username }} - TestToob{% endblock %}
+{% block content %}
+{% block head %}
+    {{ super() }}
+    <meta property="og:title" content="{% block og_title %}{{ user.username }}{% endblock %}"/>
+    <meta property="og:description" content="{% block og_description %}{{ user.bio }}{% endblock %}"/>
+    <meta property="og:url" content="{% block og_url %}{{ url_for('channel', user_id=user.id, _external=True) }}{% endblock %}"/>
+    <meta property="og:image" content="{{ url_for('uploaded_file', filename=user.profile_picture, _external=True) }}"/>
+    <meta property="og:width" content="400"/>
+    <meta property="og:height" content="400"/>
+    <meta property="og:type" content="website" />
+{% endblock %}
+<img src="{{ url_for('uploaded_file', filename=user.channel_banner) }}" 
+     alt="{{ user.username }}'s Channel Banner" 
+     class="img-fluid" 
+     style="width: 100%; height: 30vh; object-fit: cover;"
+     loading="lazy"/>
+
+<div class="row align-items-center mt-3">
+    <div class="col-auto">
+        <img src="{{ url_for('uploaded_file', filename=user.profile_picture) }}" 
+                alt="{{ user.username }}'s Profile Picture" 
+                class="img-fluid rounded-circle" 
+                style="width: 120px; height: 120px;" 
+                loading="lazy"/>
+    </div>
+
+    <div class="col">
+        <h5 class="text-light mb-0">
+            {{ user.username }}
+            {% if user.verified %}
+                <span class="verified-icon" title="Verified User">
+                    <i class="fas fa-check-circle" style="color: #00FF00; margin-left: 0.1em;"></i>
+                </span>
+            {% endif %}
+        </h5>
+        <p class="text-light subscriber-count">{{ user.subscription_count() }} Subscribers</p>
+    </div>
+
+    <div class="col-auto text-end mt-3 mt-md-0">
+        {% if current_user.is_authenticated %}
+            <button type="button" 
+                    class="btn btn-primary subscribe-button"
+                    data-user-id="{{ user.id }}"
+                    data-subscribed="{{ 'true' if current_user.is_authenticated and current_user.is_subscribed(user) else 'false' }}"
+                    data-subscriber-count="{{ user.subscription_count() }}">
+                    <i class="fas fa-user-plus" id="subscription-icon"></i> 
+                {% if current_user.is_authenticated and current_user.is_subscribed(user) %}
+                    Unsubscribe
+                {% else %}
+                    Subscribe
+                {% endif %}
+            </button>
+            {% if current_user.is_authenticated and current_user.is_subscribed(user) %}
+                <button id="notification-bell" data-user-id="{{ user.id }}" class="btn btn-primary">
+                    <i class="fas fa-bell" id="notification-icon"></i> {{ "Enabled" if notifs else "Disabled"}}
+                </button>
+            {% endif %}
+        {% else %}
+        <a href="{{ url_for('login') }}" class="btn btn-primary" data-toggle="modal" data-target="#actionModal">
+            <i class="fas fa-user-plus" id="subscription-icon"></i> Subscribe
+        </a>
+        {% endif %}
+    </div>
+</div>
+<br>
+
+
+{% if user.bio != "" or user.featured_video %}
+<div class="bio-section mt-2 p-3" style="background-color: #444; color: white; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);">
+    <div class="d-flex flex-wrap justify-content-between align-items-start">
+        {% if user.bio != "" %}
+        <div style="width: 65%; max-width: 65%;">
+            <h4 class="bio-title mb-2">About {{ user.username }}</h4>
+            <br>
+            <p class="mb-0" style="line-height: 1.5;">{{ user.bio }}</p>
+        </div>
+        {% endif %}
+        
+        {% if user.featured_video %}
+        <div class="featured-video-section mt-2 p-2" 
+             style="width: 30%; max-width: 30%; background-color: #333; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);">
+            <a href="{{ url_for('video', video_id=user.featured_video.id) }}">
+                <img src="{{ url_for('uploaded_file', filename=user.featured_video.thumbnail) }}" 
+                     alt="{{ user.featured_video.title }}" 
+                     class="img-fluid mb-2" 
+                     style="width: 100%; aspect-ratio: 16/9; object-fit: cover;" 
+                     loading="lazy"/>
+            </a>
+            <a href="{{ url_for('video', video_id=user.featured_video.id)}}"><h6 class="text-light mb-1" style="font-size: 1rem; font-weight: 600;">{{ user.featured_video.title }}</h6></a>
+            <p class="card-text mb-1" style="font-size: 0.9rem;">Views: {{ user.featured_video.views }}</p>
+            <p class="card-text" data-time="{{ user.featured_video.date_posted.isoformat() }}Z" style="font-size: 0.8rem;"></p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+<br>
+
+
+<div class="d-block d-md-none mb-2">
+    <div class="btn-group" role="group" aria-label="Video Type">
+        <a href="{{ url_for('channel', user_id=user.id, sort='popular', page=1) }}" class="btn btn-secondary btn-lg btn-sm btn-mobile {% if request.args.get('sort') == 'popular' %}active{% endif %}">Most Popular</a>
+        <a href="{{ url_for('channel', user_id=user.id, sort='newest', page=1) }}" class="btn btn-secondary btn-lg btn-sm btn-mobile {% if request.args.get('sort') == 'newest' %}active{% endif %}">Newest</a>
+        <a href="{{ url_for('channel', user_id=user.id, sort='oldest', page=1) }}" class="btn btn-secondary btn-lg btn-sm btn-mobile {% if request.args.get('sort') == 'oldest' %}active{% endif %}">Oldest</a>
+    </div>
+</div>
+<div class="d-none d-md-block">
+    <div class="btn-group" role="group" aria-label="Video Type">
+        <a href="{{ url_for('channel', user_id=user.id, sort='popular', page=1) }}" class="btn btn-secondary {% if request.args.get('sort') == 'popular' %}active{% endif %}">Most Popular</a>
+        <a href="{{ url_for('channel', user_id=user.id, sort='newest', page=1) }}" class="btn btn-secondary {% if request.args.get('sort') == 'newest' %}active{% endif %}">Newest</a>
+        <a href="{{ url_for('channel', user_id=user.id, sort='oldest', page=1) }}" class="btn btn-secondary {% if request.args.get('sort') == 'oldest' %}active{% endif %}">Oldest</a>
+    </div>
+</div>
+
+<div class="row mt-4">
+    {% for video in videos %}
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 mb-4">
+        <div class="card bg-dark text-light">
+            <a href="{{ url_for('video', video_id=video.id) }}">
+                <img src="{{ url_for('uploaded_file', filename=video.thumbnail) }}" 
+                    class="card-img-top" 
+                    alt="Thumbnail" 
+                    style="width: 100%; aspect-ratio: 16/9; object-fit: fill;"
+                    loading="lazy"/>
+            </a>
+            <div class="card-body">
+                <h6 class="card-subtitle mb-2 text-muted">
+                    <a href="{{ url_for('channel', user_id=video.author.id) }}" class="text-light">{{ video.author.username }}</a>
+                </h6>
+                <a href="{{ url_for('video', video_id=video.id) }}" class="h5">{{ video.title }}</a>
+                <p class="card-text">Views: {{ video.views }}</p>
+                <p class="card-text" data-time="{{ video.date_posted.isoformat() }}Z"></p>
+                {% if current_user.is_authenticated and current_user.id == video.author.id %}
+                <a class="btn btn-warning me-2" href="{{ url_for('edit_video', video_id=video.id) }}">
+                    <i class="fas fa-edit"></i>
+                </a>
+                <button class="btn btn-danger delete-button" data-video-id="{{ video.id }}">
+                    <i class="fas fa-trash"></i>
+                </button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="modal fade" id="actionModal" tabindex="-1" role="dialog" aria-labelledby="actionModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="background-color: #2a2a2a;">
+            <div class="modal-header">
+                <h5 class="modal-title" id="actionModalLabel">Action Required</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" style="background-color: #2a2a2a;">
+                <p>Please log in or sign up to sub to this channel.</p>
+                <a href="{{ url_for('login') }}" class="btn btn-primary">Log In</a>
+                <a href="{{ url_for('register') }}" class="btn btn-primary">Sign Up</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="pagination">
+    {% if videos.has_prev %}
+        <a href="{{ url_for('channel', user_id=user.id, page=videos.prev_num) }}">&laquo; Previous</a>
+    {% endif %}
+
+    <span style="margin-left: 1em; margin-right: 1em;">Page {{ videos.page }} of {{ videos.pages }}</span>
+
+    {% if videos.has_next %}
+        <a href="{{ url_for('channel', user_id=user.id, page=videos.next_num) }}">Next &raquo;</a>
+    {% endif %}
+</div>
+
+<script src="{{ url_for('static', filename='js/channel.js') }}"></script>
+<script src="{{ url_for('static', filename='js/time.js') }}"></script>
+{% endblock %}

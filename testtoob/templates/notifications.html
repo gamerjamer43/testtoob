@@ -1,0 +1,23 @@
+<ul class="list-group" id="notifications-list">
+    {% for notification in notifications %}
+        <li class="list-group-item" style="background-color: #2a2a2a; display: flex; align-items: center; justify-content: space-between;" data-notification-id="{{ notification.id }}">
+            <div style="flex: 1; display: flex; align-items: center;">
+                {% if not notification.is_read %}
+                    <span class="notification-dot" style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background-color: red; margin-right: 5px;"></span>
+                {% endif %}
+                <img 
+                    src="{{ url_for('uploaded_file', filename=notification.video.thumbnail) }}" 
+                    alt="Thumbnail" 
+                    style="max-width: 40px; max-height: 40px; width: auto; height: auto; border-radius: 5px; margin-left: 10px; vertical-align: middle; margin-right: 5px;"
+                >
+                <a href="{{ url_for('video', video_id=notification.video.id) }}">
+                    <strong>{{ notification.content }}</strong>
+                </a>
+            </div>
+            <i class="fas fa-trash" style="cursor: pointer; color: white;" onclick="deleteNotification('{{ notification.id }}')" title="Delete Notification"></i>
+        </li>
+    {% else %}
+        <li class="list-group-item" style="background-color: #2a2a2a">No notifications found.</li>
+    {% endfor %}
+</ul>
+<script src="{{ url_for('static', filename='js/deletenotif.js') }}"></script>

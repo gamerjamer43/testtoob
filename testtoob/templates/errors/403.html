@@ -1,0 +1,12 @@
+<!-- templates/errors/403.html -->
+{% extends "base.html" %}
+
+{% block title %}404 - Page Not Found{% endblock %}
+
+{% block content %}
+<div class="text-center">
+    <h1 class="display-3" style="font-weight: 700;">403</h1>
+    <p class="lead" style="font-weight: 700;">Get outta here! The content you're trying to access is forbidden.</p>
+    <a class="btn btn-primary mt-3" style="font-weight: 700;" href="{{ url_for('home') }}">Go back to Home</a>
+</div>
+{% endblock %}

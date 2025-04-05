@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}Video Analytics - TestToob{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-light mb-4">Video Analytics</h2>
+
+    <div class="row">
+        <!-- Total Videos -->
+        <div class="col-md-4 mb-3">
+            <div class="card bg-dark text-light">
+                <div class="card-body">
+                    <h5 class="card-title">Total Videos</h5>
+                    <p class="card-text">{{ videos|length }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Views -->
+        <div class="col-md-4 mb-3">
+            <div class="card bg-dark text-light">
+                <div class="card-body">
+                    <h5 class="card-title">Total Views</h5>
+                    <p class="card-text">{{ videos|sum(attribute='views') }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Likes -->
+        <div class="col-md-4 mb-3">
+            <div class="card bg-dark text-light">
+                <div class="card-body">
+                    <h5 class="card-title">Total Likes</h5>
+                    <p class="card-text">{{ video_likes|sum }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Comments -->
+        <div class="col-md-4 mb-3">
+            <div class="card bg-dark text-light">
+                <div class="card-body">
+                    <h5 class="card-title">Total Comments</h5>
+                    <p class="card-text">
+                        {% set total_comments = 0 %}
+                        {% for video in videos %}
+                            {% set total_comments = total_comments + video.comments|length %}
+                        {% endfor %}
+                        {{ total_comments }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Performing Videos -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <h3 class="text-light">Top Performing Videos</h3>
+        </div>
+        {% for video in top_videos %}
+        <div class="col-md-4 mb-3">
+            <div class="card bg-dark text-light">
+                <div class="row no-gutters">
+                    <div class="col-md-4">
+                        <img src="{{ url_for('uploaded_file', filename=video.thumbnail) }}" class="card-img" alt="Video Thumbnail" style="width: 100% 100%; object-fit: cover;">
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ video.title }}</h5>
+                            <p class="card-text">Views: {{ video.views }}</p>
+                            <p class="card-text">Likes: {{ video.like_counter() }}</p>
+                            <p class="card-text">Comments: {{ video.comments|length }}</p>
+                            <a href="{{ url_for('video', video_id=video.id) }}" class="btn btn-primary">View Video</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

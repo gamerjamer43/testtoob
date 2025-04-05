@@ -1,0 +1,136 @@
+<!-- templates/search.html -->
+{% extends "base.html" %}
+{% block title %}Search Results for "{{ query }}"{% endblock %}
+{% block content %}
+<head>
+    <meta property="og:title" content="{% block og_title %}TestToob{% endblock %}" />
+    <meta property="og:description" content="{% block og_description %}Welcome to TestToob! This is a clone of YouTube made by @microwavedpopcorn on discord, and so far it's a WIP. Upload your videos here and see what the fuck happens, idk!{% endblock %}" />
+    <meta property="og:image" content="{{ url_for('uploaded_file', filename='logo.png') }}" />
+    <meta property="og:url" content="{% block og_url %}{{ url_for('home') }}{% endblock %}" />
+    <meta property="og:type" content="website" />
+</head>
+
+<h2 class="text-light" style="margin-bottom: 1em;">Search Results for "{{ query }}"</h2>
+
+<div class="d-block d-md-none mb-2">
+    <div class="btn-group" role="group" aria-label="Search Type">
+        <a href="{{ url_for('search', query=query, search_type='channels') }}" 
+           class="btn btn-secondary btn-lg btn-sm btn-mobile {% if search_type == 'channels' %}active{% endif %}">
+            Channels
+        </a>
+        <a href="{{ url_for('search', query=query, search_type='videos') }}" 
+           class="btn btn-secondary btn-lg btn-sm btn-mobile {% if search_type == 'videos' %}active{% endif %}">
+            Videos
+        </a>
+    </div>
+</div>
+<div class="d-none d-md-block mb-2">
+    <div class="btn-group" role="group" aria-label="Search Type">
+        <a href="{{ url_for('search', query=query, search_type='channels') }}" 
+           class="btn btn-secondary {% if search_type == 'channels' %}active{% endif %}">
+            Channels
+        </a>
+        <a href="{{ url_for('search', query=query, search_type='videos') }}" 
+           class="btn btn-secondary {% if search_type == 'videos' %}active{% endif %}">
+            Videos
+        </a>
+    </div>
+</div>
+
+{% if search_type == 'channels' and matching_channels %}
+    <h3 class="text-light">Channels:</h3>
+    <div class="row">
+        {% for channel in matching_channels %}
+        <div class="col-md-3 mb-4">
+            <div class="card bg-dark text-light">
+                <img src="{{ url_for('uploaded_file', filename=channel.profile_picture) }}" 
+                    class="card-img-top" 
+                    alt="Profile Picture" 
+                    style="width: 320px; height: 180px; object-fit: fill;">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <a href="{{ url_for('channel', user_id=channel.id) }}" class="text-light">{{ channel.username }}</a>
+                        {% if channel.verified %}
+                        <span class="verified-icon" title="Verified User">
+                            <i class="fas fa-check-circle" style="color: #00FF00;"></i>
+                        </span>
+                        {% endif %}
+                    </h5>
+                    <p class="card-text">{{ channel.bio }}</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+{% if search_type == 'videos' %}
+    {% if matching_channels %}
+        <h3 class="text-light">Channels:</h3>
+        <div class="row">
+            {% for channel in matching_channels %}
+            <div class="col-md-3 mb-4">
+                <div class="card bg-dark text-light">
+                    <img src="{{ url_for('uploaded_file', filename=channel.profile_picture) }}" 
+                        class="card-img-top" 
+                        alt="Profile Picture" 
+                        style="width: 100%; height: 180px; object-fit: fill;">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <a href="{{ url_for('channel', user_id=channel.id) }}" class="text-light">{{ channel.username }}</a>
+                            {% if channel.verified %}
+                            <span class="verified-icon" title="Verified User">
+                                <i class="fas fa-check-circle" style="color: #00FF00;"></i>
+                            </span>
+                            {% endif %}
+                        </h5>
+                        <p class="card-text">{{ channel.bio }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    <h3 class="text-light">Videos:</h3>
+    <div class="row mt-4">
+        {% if videos %}
+            {% for video in videos.items %}
+            <div class="col-md-3 mb-4">
+                <div class="card bg-dark text-light">
+                    <img src="{{ url_for('uploaded_file', filename=video.thumbnail) }}" 
+                         class="card-img-top" 
+                         alt="Thumbnail" 
+                         style="height: 180px; object-fit: cover;">
+                    <div class="card-body">
+                        <h6 class="card-subtitle mb-2 text-muted">
+                            <a href="{{ url_for('channel', user_id=video.author.id) }}" class="text-light">{{ video.author.username }}</a>
+                        </h6>
+                        <a href="{{ url_for('video', video_id=video.id) }}" class="h5">{{ video.title }}</a>
+                        <p class="card-text">Views: {{ video.views }}</p>
+                        <p class="card-text">{{ video.date_posted.strftime('%B %d, %Y, %I:%M %p') }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+        <div class="col-md-12">
+            <p class="text-light">No results found for "{{ query }}".</p>
+        </div>
+        {% endif %}
+    </div>
+{% endif %}
+
+<div class="pagination">
+    {% if videos.has_prev %}
+        <a href="{{ url_for('search', query=query, page=videos.prev_num, search_type=search_type) }}">&laquo; Previous</a>
+    {% endif %}
+
+    <span style="margin-left: 1em; margin-right: 1em;">Page {{ videos.page }} of {{ videos.pages }}</span>
+
+    {% if videos.has_next %}
+        <a href="{{ url_for('search', query=query, page=videos.next_num, search_type=search_type) }}">Next &raquo;</a>
+    {% endif %}
+</div>
+<br>
+
+{% endblock %}

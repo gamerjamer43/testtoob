@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maintenance Mode - TestToob</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='icon.ico') }}" type="image/x-icon">
+    <head>
+        <meta property="og:title" content="{% block og_title %}TestToob{% endblock %}" />
+        <meta property="og:description" content="{% block og_description %}Welcome to TestToob! This is a clone of YouTube made by @microwavedpopcorn on discord, and so far it's a WIP. We are under maintenance if this site is up!{% endblock %}" />
+        <meta property="og:image" content="{{ url_for('static', filename='logo.png') }}" />
+        <meta property="og:url" content="{% block og_url %}{{ url_for('index') }}{% endblock %}" />
+        <meta property="og:type" content="website" />
+    </head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/maintenance.css') }}">
+</head>
+<body>
+    <img src="{{ url_for('static', filename='logo.png') }}" alt="TestToob Logo">
+    <h1 style="font-weight: 800;">Shit Will Be Back Up Soon!</h1>
+    <p style="font-weight: 700;">Ya boy is currently performing some maintenance. Thank you for being patient cuz I suck at coding!</p>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
