@@ -26,9 +26,10 @@ testtoob is a flask-based video sharing platform that lets users upload, view, a
 - ffmpeg (for video conversion)
 - sqlite (the database)
 
-## file structure
+## main file structure
 
 - **app.py:** main flask application file containing route definitions, models, forms, and error handling.
+- **adminpanel.py:** allows the deletion of videos, channels, and comments; the toggling of channel verification; and the ability to show details of a channel
 - **templates/:** folder containing html templates for different pages (e.g. home, login, register, upload, video, channel, settings, error pages).
 - **static/:** folder for static files like css, javascript, and images.
 - **uploads/:** directory configured for storing uploaded video and thumbnail files.
