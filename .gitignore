@@ -1,3 +1,7 @@
 instance/
 backup/
 uploads/
+__pycache__/
+keyholder.py
+appholder.py
+tdl.txt

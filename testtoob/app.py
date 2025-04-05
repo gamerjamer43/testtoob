@@ -21,7 +21,7 @@ from enum import Enum
 from mimetypes import MimeTypes
 import bleach, cv2, datetime, os, pytz, re, subprocess
 
-# Key holder and warning suppression (fucking SAWarning i do not sexual assault)
+# Key holder and warning suppression (SAWarning)
 from keyholder import key
 # import warnings (to add)
 
